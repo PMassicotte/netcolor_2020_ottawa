@@ -1,0 +1,59 @@
+.remark-slide-content {
+    font-size: 35px;
+    padding: 1em 4em 1em 4em;
+}
+.remark-inline-code {
+    font-size: 0.75em;
+}
+
+.verticalhorizontal {
+    text-align:center;
+ display:block;
+}
+
+.my-one-page-font > h1 {
+  font-size: 120px;
+}
+
+.my-one-page-font > ul {
+  text-align: left;
+}
+
+.my-one-page-font {
+  color: #3c3c3c;
+}
+
+
+strong {
+    font-weight: normal;
+}
+
+small {
+  font-size: 18px;
+}
+
+.imgContainer{
+    float:top;
+    margin-right:10px;
+}
+
+.imgContainer2{
+    float:left;
+    margin-right:10px;
+}
+div.gallery {
+  margin: 5px;
+  border: 0px solid #ccc;
+  float: left;
+  width: 300px;
+}
+
+div.gallery img {
+  width: 100%;
+  height: auto;
+}
+
+div.desc {
+  padding: 15px;
+  text-align: center;
+}

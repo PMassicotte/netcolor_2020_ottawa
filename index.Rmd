@@ -1,0 +1,118 @@
+---
+title: "Primary productivity in the Arctic: modeling products from Takuvik"
+subtitle: "🛰️ <br><br>Presented by Philippe Massicotte"
+author: "In collaboration with (*no specific order*): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna"
+date: "2020-02-11--2020-02-12 (Ottawa, Canada)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [xaringan-themer.css, styles.css]
+    self_contained: false
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  cache = TRUE,
+  out.width = "100%",
+  fig.align = "center",
+  # fig.width = 8,
+  # fig.asp = 0.618, # 1 / phi
+  fig.show = "hold",
+  dev = "svg",
+  message = FALSE,
+  warning = FALSE,
+  echo = FALSE
+)
+library(tidyverse)
+library(ggpmthemes)
+library(fontawesome)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+library(ggtext)
+library(sf)
+
+theme_set(theme_poppins(base_size = 12))
+```
+
+```{r xaringan-themer, include=FALSE}
+library(xaringanthemer)
+duo(
+  code_font_family = "Fira Code",
+  code_font_url = "https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css",
+  text_font_google = google_font("Questrial"),
+  inverse_background_color = "#ABB7B7",
+  inverse_text_color = "#3c3c3c",
+  inverse_header_color = "#3c3c3c",
+  background_color = "#3c3c3c",
+  header_color = "#B2CCE5",
+  title_slide_text_color = "#3c3c3c",
+  title_slide_background_color = "#ABB7B7"
+  # Yanone Kaffeesatz
+)
+```
+
+class: my-one-page-font, inverse, center, middle
+
+# The vertical distribution of underwater light in open water
+
+An overview
+
+---
+
+# Ideas
+
+- Two products (ppv0 and ppv1)
+
+- Map with colored region 45N +
+
+- Verticallity (Ardyna paper)
+
+- Show vertical profiles of Chla (from ppv1, find one on the NAS)
+
+- Validation of the algorithm (round-robin paper)
+
+- Work in progress (show some early results)
+    - Show a figure with decreasing SIC and that will likely result in increasing PP for some region.
+    - Show the WWF regions (allow to do regional budget)
+    - Talk about CCI/GC (which one we used)
+
+- Make the data available as soon as possible
+
+---
+
+# Pan-Arctic
+
+```{r, fig.height=3, dev.args=list(bg="transparent")}
+wm <- rnaturalearth::ne_countries(returnclass = "sf", scale = "medium") %>%
+  st_crop(
+    xmin = -180,
+    xmax = 180,
+    ymin = 45,
+    ymax = 90
+  )
+
+wm %>%
+  ggplot() +
+  geom_sf(size = 0.25) +
+  coord_sf(crs = 3411) +
+  theme(
+    panel.background = element_rect(fill = "white", colour = NA),
+    plot.background = element_rect(fill = "transparent", colour = NA),
+    panel.grid = element_blank(),
+    panel.border = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+```
+
