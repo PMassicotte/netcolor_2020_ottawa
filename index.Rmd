@@ -28,7 +28,8 @@ knitr::opts_chunk$set(
   # fig.width = 8,
   # fig.asp = 0.618, # 1 / phi
   fig.show = "hold",
-  dev = "svg",
+  dev = "png",
+  dpi = 600,
   message = FALSE,
   warning = FALSE,
   echo = FALSE
@@ -91,9 +92,44 @@ An overview
 
 ---
 
-# Pan-Arctic
+class: my-one-page-font, inverse, center, middle
 
-```{r, fig.height=3, dev.args=list(bg="transparent")}
+# Spatial extent
+
+45+, pixel resolution, etc.
+
+---
+
+class: my-one-page-font, inverse, center, middle
+
+# Model specifications
+
+---
+
+# Model specifications
+
+- Chlorophyll-a inputs: CCI (can be easily modified - use Juan inputs)
+
+    - Image with all the sensors used in CCI
+    - merged MERIS, Aqua-MODIS, SeaWiFS and VIIRS 
+
+- Temporal resolution
+
+    - Daily, between 2003-2018 (15 years of continuous data)
+
+---
+
+class: my-one-page-font, inverse, center, middle
+
+# Outgoing project
+
+---
+
+# The phenology of primary production
+
+27 regions
+
+```{r wwf_regions, fig.height=3.5, dev.args=list(bg="transparent")}
 wm <- rnaturalearth::ne_countries(returnclass = "sf", scale = "medium") %>%
   st_crop(
     xmin = -180,
@@ -102,12 +138,16 @@ wm <- rnaturalearth::ne_countries(returnclass = "sf", scale = "medium") %>%
     ymax = 90
   )
 
+wwf <- st_read("//Desktop-main/d/work-ulaval/projects/phenology_pp/data/Carte WWF source/RACER_Study_Units_160210_Mar.shp", quiet = TRUE)
+
 wm %>%
   ggplot() +
-  geom_sf(size = 0.25) +
-  coord_sf(crs = 3411) +
+  geom_sf(size = 0.25, fill = "gray50", color = "white") +
+  geom_sf(data = wwf, aes(fill = Unique_ID), show.legend = FALSE, size = 0.25, color = "white") +
+  coord_sf(crs = st_crs(wwf)) +
+  rcartocolor::scale_fill_carto_c(palette = "Teal") + 
   theme(
-    panel.background = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
     panel.grid = element_blank(),
     panel.border = element_blank(),
