@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Primary productivity in the Arctic: modeling products from Takuvik</title>
+    <title>Primary productivity in the Arctic: modeling products developed at Takuvik</title>
     <meta charset="utf-8" />
-    <meta name="author" content="In collaboration with (no specific order): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna" />
+    <meta name="author" content="In collaboration with (no specific order): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna, (and probably many others I forgot)" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="styles.css" type="text/css" />
   </head>
@@ -11,9 +11,9 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Primary productivity in the Arctic: modeling products from Takuvik
+# Primary productivity in the Arctic: modeling products developed at Takuvik
 ## 🛰️ <br><br>Presented by Philippe Massicotte
-### In collaboration with (<em>no specific order</em>): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna
+### In collaboration with (<em>no specific order</em>): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna, (<em>and probably many others I forgot</em>)
 ### 2020-02-11–2020-02-12 (Ottawa, Canada)
 
 ---
@@ -25,38 +25,97 @@ class: center, middle, inverse, title-slide
 
 class: my-one-page-font, inverse, center, middle
 
-# The vertical distribution of underwater light in open water
+# Primary production in the Arctic
 
-An overview
+A brief presentation of the laster primary production model developed at Takuvik
 
 ---
 
-# Ideas
+# Modeling primary production
 
-- Two products (ppv0 and ppv1)
+Daily primary production `\((mgC~m^{-2}~d^{-1})\)` can be *easily* calculated as follows:
 
-- Map with colored region 45N +
+`\begin{equation}
+\text{PP} = P^B_{\text{max}}\int_{t~=~0}^{24h}\int_{z~=0}^{z_\text{max}}\text{Chl a}(z)[1-e^{\frac{-\text{PUR}(z,t)}{E_k\text{PUR}(z)}}]\,\mathrm{d}t\mathrm{d}z
+\end{equation}`
 
-- Verticallity (Ardyna paper)
+**Important to have proper values/estimates of Chl *a*.**
 
-- Show vertical profiles of Chla (from ppv1, find one on the NAS)
+--
 
-- Validation of the algorithm (round-robin paper)
+But why do we need another primary production model 🤔
 
-- Work in progress (show some early results)
-    - Show a figure with decreasing SIC and that will likely result in increasing PP for some region.
-    - Show the WWF regions (allow to do regional budget)
-    - Talk about CCI/GC (which one we used)
+---
 
-- Make the data available as soon as possible
+# Estimating Chl *a* in the water column
+
+- Ocean color (OC) satellite sensors can only detect surface Chl *a*.
+
+- Can not detect subsurface chlorophyll maxima (SCMs) that can significantly contribute to areal primary production in the Arctic Ocean (Hill et al., 2005; Weston et al., 2005; Martin et al., 2010).
+
+- Hence, **SCMs are generally omitted from PP estimates based on OC remote sensing.**
+
+---
+
+# Subsurface chlorophyll maxima (SCMs)
+
+&lt;img src="index_files/figure-html/scm1-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Subsurface chlorophyll maxima (SCMs)
+
+&lt;img src="index_files/figure-html/scm2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Parameterization of vertical chl *a* in the Arctic Ocean
+
+The study of Ardyna et al. 2013 tackled the problem of characterizing the SCMs in the Arctic.
+
+&gt; In the Arctic Ocean, deep subsurface chlorophyll maxima (SCMs) that significantly contribute to primary production (PP) are often observed. These are neither detected by ocean color sensors nor accounted for in the primary production models applied to the Arctic Ocean.
+&gt;
+&gt; — *Ardyna et al., 2013*
 
 ---
 
 class: my-one-page-font, inverse, center, middle
 
-# Spatial extent
+# The primary production model
 
-45+, pixel resolution, etc.
+Taking into account the vertical variations in Chl *a*.
+
+---
+
+# How to model Chl *a* vertical profile?
+
+Ardyna et al. proposed to parameterize the vertical Chl *a* profiles using a Gaussian-based equation:
+
+`\begin{equation}
+c(z) = C_b - sz + C_{\text{max}}e^{-(\frac{z - Z_{\text{max}}}{\Delta z})^2}
+\end{equation}`
+
+--
+
+How to estimate the parameters `\(C_b, s,  C_{\text{max}},  Z_{\text{max}}\)`?
+
+---
+
+# How to model Chl *a* vertical profile?
+
+Parameter values determine the shape of the SCMs.
+
+&lt;img src="index_files/figure-html/scm3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Bloom state, region and depth
+
+Flowchart developed by Ardyna et al. (2013).
+
+&lt;center&gt;
+&lt;img src="img/flowchart.png" height="400"&gt;
+&lt;/center&gt;
 
 ---
 
@@ -68,28 +127,42 @@ class: my-one-page-font, inverse, center, middle
 
 # Model specifications
 
-- Chlorophyll-a inputs: CCI (can be easily modified - use Juan inputs)
+- Climate Change Initiative (CCI)
+    - Merged MERIS, Aqua-MODIS, SeaWiFS and VIIRS
+    - **Chl *a***, Rrs
 
-    - Image with all the sensors used in CCI
-    - merged MERIS, Aqua-MODIS, SeaWiFS and VIIRS 
+- MODIS
+    - Atmospheric products (cloud cover, cloud optical thickness, ozone)
+
+- **Important**: all inputs can be modified
+    - Open the door for data with better spatial/temporal coverage
+  
+---
+
+# The spatial and temporal scales
+
+- Spatial resolution
+    - 45N+, pixel resolution, etc.
 
 - Temporal resolution
-
-    - Daily, between 2003-2018 (15 years of continuous data)
-
----
-
-class: my-one-page-font, inverse, center, middle
-
-# Outgoing project
+    - Daily between 2003-2018 (15 years of continuous data)
 
 ---
 
-# The phenology of primary production
+# A pan-Arctic model
 
-27 regions
+Data divided into 27 regions (based on WWF definition)
 
-&lt;img src="index_files/figure-html/wwf_regions-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/wwf_regions-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Wrapping-up
+
+- Data has been produced for the 2003-2015 period.
+    - Available on request, but plan to put it online when we find a way to share such a huge database.
+
+- Easy to re-run with *better* inputs such as Chl *a* (see Juan Li's presentation).
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -1,7 +1,7 @@
 ---
-title: "Primary productivity in the Arctic: modeling products from Takuvik"
+title: "Primary productivity in the Arctic: modeling products developed at Takuvik"
 subtitle: "🛰️ <br><br>Presented by Philippe Massicotte"
-author: "In collaboration with (*no specific order*): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna"
+author: "In collaboration with (*no specific order*): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna, (*and probably many others I forgot*)"
 date: "2020-02-11--2020-02-12 (Ottawa, Canada)"
 output:
   xaringan::moon_reader:
@@ -23,10 +23,10 @@ knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE,
   cache = TRUE,
-  out.width = "100%",
+  out.width = "80%",
   fig.align = "center",
-  # fig.width = 8,
-  # fig.asp = 0.618, # 1 / phi
+  fig.width = 6,
+  fig.asp = 0.618, # 1 / phi
   fig.show = "hold",
   dev = "png",
   dpi = 600,
@@ -42,8 +42,9 @@ library(kableExtra)
 library(patchwork)
 library(ggtext)
 library(sf)
+library(ggforce)
 
-theme_set(theme_poppins(base_size = 12))
+theme_set(theme_poppins(base_size = 16))
 ```
 
 ```{r xaringan-themer, include=FALSE}
@@ -65,38 +66,178 @@ duo(
 
 class: my-one-page-font, inverse, center, middle
 
-# The vertical distribution of underwater light in open water
+# Primary production in the Arctic
 
-An overview
+A brief presentation of the laster primary production model developed at Takuvik
 
 ---
 
-# Ideas
+# Modeling primary production
 
-- Two products (ppv0 and ppv1)
+Daily primary production $(mgC~m^{-2}~d^{-1})$ can be *easily* calculated as follows:
 
-- Map with colored region 45N +
+\begin{equation}
+\text{PP} = P^B_{\text{max}}\int_{t~=~0}^{24h}\int_{z~=0}^{z_\text{max}}\text{Chl a}(z)[1-e^{\frac{-\text{PUR}(z,t)}{E_k\text{PUR}(z)}}]\,\mathrm{d}t\mathrm{d}z
+\end{equation}
 
-- Verticallity (Ardyna paper)
+**Important to have proper values/estimates of Chl *a*.**
 
-- Show vertical profiles of Chla (from ppv1, find one on the NAS)
+--
 
-- Validation of the algorithm (round-robin paper)
+But why do we need another primary production model 🤔
 
-- Work in progress (show some early results)
-    - Show a figure with decreasing SIC and that will likely result in increasing PP for some region.
-    - Show the WWF regions (allow to do regional budget)
-    - Talk about CCI/GC (which one we used)
+---
 
-- Make the data available as soon as possible
+# Estimating Chl *a* in the water column
+
+- Ocean color (OC) satellite sensors can only detect surface Chl *a*.
+
+- Can not detect subsurface chlorophyll maxima (SCMs) that can significantly contribute to areal primary production in the Arctic Ocean (Hill et al., 2005; Weston et al., 2005; Martin et al., 2010).
+
+- Hence, **SCMs are generally omitted from PP estimates based on OC remote sensing.**
+
+---
+
+# Subsurface chlorophyll maxima (SCMs)
+
+```{r scm1}
+
+# 0.2765 0.0002 1.578 37.94 20.73
+
+cb <- 0.2765
+s <- 0.0002
+cmax <- 1.578
+zmax <- 37.94
+dz <- 20.73
+
+z <- seq(0, 150, by = 0.1)
+
+chla <- cb - s * z + cmax * exp(-((z - zmax) / dz)^2)
+
+p <- tibble(z, chla) %>%
+  ggplot(aes(x = chla, y = z)) +
+  geom_path(size = 2) +
+  scale_y_reverse() +
+  geom_hline(
+    yintercept = zmax,
+    lty = 2,
+    color = "gray50",
+    size = 1
+  ) +
+  labs(
+    x = "Normalized Chl a",
+    y = "Depth (m)"
+  )
+
+p
+```
+
+---
+
+# Subsurface chlorophyll maxima (SCMs)
+
+```{r scm2}
+p +
+  geom_mark_circle(aes(
+    filter = z == 0,
+    label = "What is seen\nby the satellite"
+  ),
+  expand = unit(3, "mm"),
+  label.family = "Aldrich"
+  ) +
+  geom_mark_circle(aes(
+    filter = chla == max(chla),
+    label = "What is missed\nby the satellite"
+  ),
+  expand = unit(3, "mm"),
+  label.family = "Aldrich"
+  )
+```
+
+---
+
+# Parameterization of vertical chl *a* in the Arctic Ocean
+
+The study of Ardyna et al. 2013 tackled the problem of characterizing the SCMs in the Arctic.
+
+> In the Arctic Ocean, deep subsurface chlorophyll maxima (SCMs) that significantly contribute to primary production (PP) are often observed. These are neither detected by ocean color sensors nor accounted for in the primary production models applied to the Arctic Ocean.
+>
+> — *Ardyna et al., 2013*
 
 ---
 
 class: my-one-page-font, inverse, center, middle
 
-# Spatial extent
+# The primary production model
 
-45+, pixel resolution, etc.
+Taking into account the vertical variations in Chl *a*.
+
+---
+
+# How to model Chl *a* vertical profile?
+
+Ardyna et al. proposed to parameterize the vertical Chl *a* profiles using a Gaussian-based equation:
+
+\begin{equation}
+c(z) = C_b - sz + C_{\text{max}}e^{-(\frac{z - Z_{\text{max}}}{\Delta z})^2}
+\end{equation}
+
+--
+
+How to estimate the parameters $C_b, s,  C_{\text{max}},  Z_{\text{max}}$?
+
+---
+
+# How to model Chl *a* vertical profile?
+
+Parameter values determine the shape of the SCMs.
+
+```{r scm3, out.width= "70%", fig.height=5, fig.width=8, fig.asp=NA}
+n <- 10
+cb <- seq(0.09, 1.17, length.out = n)
+s <- seq(0.0001, 0.0026, length.out = n)
+cmax <- seq(0.11, 2.15, length.out = n)
+zmax <- seq(0, 83.42, length.out = n)
+dz <- seq(18.45, 80.52, length.out = n)
+
+z <- seq(0, 150, by = 1)
+
+# crossing(cb, s, cmax, zmax, dz) %>% 
+tibble(cb, s, cmax, zmax, dz) %>% 
+  rowid_to_column() %>%
+  group_nest(rowid) %>% 
+  mutate(z = list(z)) %>% 
+  unnest(c(data, z)) %>% 
+  group_nest(rowid) %>% 
+  mutate(chla = map(data, function(data) {
+    
+    with(data, cb - s * z + cmax * exp(-((z - zmax) / dz)^2))
+    
+  })) %>%
+  unnest(c(data, chla)) %>% 
+  ggplot(aes(x = chla, y = z, color = factor(rowid))) +
+  geom_path(size = 1) +
+  scale_y_reverse() +
+  labs(
+    x = "Normalized Chl a",
+    y = "Depth (m)"
+  ) +
+  # scale_color_viridis_d(option = "A") +
+  theme(
+    legend.position = "none"
+  )
+
+```
+
+---
+
+# Bloom state, region and depth
+
+Flowchart developed by Ardyna et al. (2013).
+
+<center>
+<img src="img/flowchart.png" height="400">
+</center>
 
 ---
 
@@ -108,28 +249,34 @@ class: my-one-page-font, inverse, center, middle
 
 # Model specifications
 
-- Chlorophyll-a inputs: CCI (can be easily modified - use Juan inputs)
+- Climate Change Initiative (CCI)
+    - Merged MERIS, Aqua-MODIS, SeaWiFS and VIIRS
+    - **Chl *a***, Rrs
 
-    - Image with all the sensors used in CCI
-    - merged MERIS, Aqua-MODIS, SeaWiFS and VIIRS 
+- MODIS
+    - Atmospheric products (cloud cover, cloud optical thickness, ozone)
+
+- **Important**: all inputs can be modified
+    - Open the door for data with better spatial/temporal coverage
+  
+---
+
+# The spatial and temporal scales
+
+- Spatial resolution
+    - 45N+
+    - 4.6 km
 
 - Temporal resolution
-
-    - Daily, between 2003-2018 (15 years of continuous data)
-
----
-
-class: my-one-page-font, inverse, center, middle
-
-# Outgoing project
+    - Daily between 2003-2018 (15 years of continuous data)
 
 ---
 
-# The phenology of primary production
+# A pan-Arctic model
 
-27 regions
+Data divided into 27 regions (based on WWF definition)
 
-```{r wwf_regions, fig.height=3.5, dev.args=list(bg="transparent")}
+```{r wwf_regions, dev.args=list(bg="transparent")}
 wm <- rnaturalearth::ne_countries(returnclass = "sf", scale = "medium") %>%
   st_crop(
     xmin = -180,
@@ -145,7 +292,7 @@ wm %>%
   geom_sf(size = 0.25, fill = "gray50", color = "white") +
   geom_sf(data = wwf, aes(fill = Unique_ID), show.legend = FALSE, size = 0.25, color = "white") +
   coord_sf(crs = st_crs(wwf)) +
-  rcartocolor::scale_fill_carto_c(palette = "Teal") + 
+  rcartocolor::scale_fill_carto_c(palette = "Teal") +
   theme(
     panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
@@ -156,3 +303,11 @@ wm %>%
   )
 ```
 
+---
+
+# Wrapping-up
+
+- Data has been produced for the 2003-2015 period.
+    - Available on request, but plan to put it online when we find a way to share such a huge database.
+
+- Easy to re-run with *better* inputs such as Chl *a* (see Juan Li's presentation).
