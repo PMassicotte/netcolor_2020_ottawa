@@ -1,5 +1,5 @@
 ---
-title: "Primary productivity in the Arctic: modeling products developed at Takuvik"
+title: "Primary productivity in the Arctic: a model developed at Takuvik"
 subtitle: "🛰️ <br><br>Presented by Philippe Massicotte"
 author: "In collaboration with (*no specific order*): Maxime Benoît-Gagné, Simon Bélanger, Emmanuel Devred, Atsushi Mastuoka, Marcel Babin, Marie-Hélène Forget, Jean-Thomas Baillargeon, Eric Rehm, Mathieu Ardyna, (*and probably many others I forgot*)"
 date: "2020-02-11--2020-02-12 (Ottawa, Canada)"
@@ -66,9 +66,7 @@ duo(
 
 class: my-one-page-font, inverse, center, middle
 
-# Primary production in the Arctic
-
-A brief presentation of the laster primary production model developed at Takuvik
+# A brief presentation of the primary production model developed at Takuvik
 
 ---
 
@@ -168,15 +166,13 @@ The study of Ardyna et al. 2013 tackled the problem of characterizing the SCMs i
 
 class: my-one-page-font, inverse, center, middle
 
-# The primary production model
-
-Taking into account the vertical variations in Chl *a*.
+# Taking into account the vertical variations in Chl *a*.
 
 ---
 
 # How to model Chl *a* vertical profile?
 
-Ardyna et al. proposed to parameterize the vertical Chl *a* profiles using a Gaussian-based equation:
+*Ardyna et al. 2013* proposed to parameterize the vertical Chl *a* profiles using a Gaussian-based equation:
 
 \begin{equation}
 c(z) = C_b - sz + C_{\text{max}}e^{-(\frac{z - Z_{\text{max}}}{\Delta z})^2}
@@ -185,6 +181,10 @@ c(z) = C_b - sz + C_{\text{max}}e^{-(\frac{z - Z_{\text{max}}}{\Delta z})^2}
 --
 
 How to estimate the parameters $C_b, s,  C_{\text{max}},  Z_{\text{max}}$?
+
+--
+
+**This is the main novelty of the Takuvik's primary production model.**
 
 ---
 
@@ -231,7 +231,7 @@ tibble(cb, s, cmax, zmax, dz) %>%
 
 ---
 
-# Bloom state, region and depth
+# Bloom state, region, depth and surface Chl *a*
 
 Flowchart developed by Ardyna et al. (2013).
 
@@ -249,17 +249,31 @@ class: my-one-page-font, inverse, center, middle
 
 # Model specifications
 
+--
+
 - Climate Change Initiative (CCI)
     - Merged MERIS, Aqua-MODIS, SeaWiFS and VIIRS
-    - **Chl *a***, Rrs
+    - **Surface Chl *a***, Rrs
+
+--
 
 - MODIS
     - Atmospheric products (cloud cover, cloud optical thickness, ozone)
 
 --
 
-- **Important**: all inputs can be modified
-    - Open the door for data with better spatial/temporal coverage
+- Lookup table (LUT)
+    - Calculate downwelling radiance $(E_d)$
+
+---
+
+# Model specifications
+
+**Important:** 
+  
+  - All parameter inputs can be modified
+  
+  - Opens the door for data with better spatial/temporal coverage
   
 ---
 
