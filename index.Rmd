@@ -258,12 +258,8 @@ class: my-one-page-font, inverse, center, middle
 --
 
 - MODIS
-    - Atmospheric products (cloud cover, cloud optical thickness, ozone)
-
---
-
-- Lookup table (LUT)
-    - Calculate downwelling radiance $(E_d)$
+    - Atmospheric products (cloud cover, cloud optical thickness, ozone) to calculate downwelling radiance $(E_d)$
+    - Lookup table from Simon Bélanger
 
 ---
 
