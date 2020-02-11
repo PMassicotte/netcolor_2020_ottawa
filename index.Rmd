@@ -92,9 +92,9 @@ But why do we need another primary production model 🤔
 
 - Ocean color (OC) satellite sensors can only detect surface Chl *a*.
 
-- Can not detect subsurface chlorophyll maxima (SCMs) that can significantly contribute to areal primary production in the Arctic Ocean (Hill et al., 2005; Weston et al., 2005; Martin et al., 2010).
+- Can not detect subsurface chlorophyll maxima (SCMs) that can significantly contribute to areal primary production in the Arctic Ocean (*Hill et al., 2005; Weston et al., 2005; Martin et al., 2010*).
 
-- Hence, **SCMs are generally omitted from PP estimates based on OC remote sensing.**
+- **Hence, SCMs are generally omitted from primary production estimates derived from remote sensing.**
 
 ---
 
@@ -160,7 +160,7 @@ p +
 
 The study of Ardyna et al. 2013 tackled the problem of characterizing the SCMs in the Arctic.
 
-> In the Arctic Ocean, deep subsurface chlorophyll maxima (SCMs) that significantly contribute to primary production (PP) are often observed. These are neither detected by ocean color sensors nor accounted for in the primary production models applied to the Arctic Ocean.
+> In the Arctic Ocean, deep subsurface chlorophyll maxima (SCMs) that significantly contribute to primary production (PP) are often observed. These are neither detected by ocean color sensors **nor accounted for in the primary production models applied to the Arctic Ocean**.
 >
 > — *Ardyna et al., 2013*
 
@@ -200,7 +200,7 @@ cmax <- seq(0.11, 2.15, length.out = n)
 zmax <- seq(0, 83.42, length.out = n)
 dz <- seq(18.45, 80.52, length.out = n)
 
-z <- seq(0, 150, by = 1)
+z <- seq(0, 400, by = 1)
 
 # crossing(cb, s, cmax, zmax, dz) %>% 
 tibble(cb, s, cmax, zmax, dz) %>% 
@@ -256,25 +256,22 @@ class: my-one-page-font, inverse, center, middle
 - MODIS
     - Atmospheric products (cloud cover, cloud optical thickness, ozone)
 
+--
+
 - **Important**: all inputs can be modified
     - Open the door for data with better spatial/temporal coverage
   
 ---
 
-# The spatial and temporal scales
+# A pan-Arctic model
 
-- Spatial resolution
-    - 45N+
-    - 4.6 km
+- Pan-Arctic (45N+) divided into 27 regions (based on WWF definition). 
 
-- Temporal resolution
-    - Daily between 2003-2018 (15 years of continuous data)
+- Daily between 2003-2018 (15 years of continuous data).
 
 ---
 
 # A pan-Arctic model
-
-Data divided into 27 regions (based on WWF definition)
 
 ```{r wwf_regions, dev.args=list(bg="transparent")}
 wm <- rnaturalearth::ne_countries(returnclass = "sf", scale = "medium") %>%
@@ -310,4 +307,5 @@ wm %>%
 - Data has been produced for the 2003-2015 period.
     - Available on request, but plan to put it online when we find a way to share such a huge database.
 
-- Easy to re-run with *better* inputs such as Chl *a* (see Juan Li's presentation).
+- Easy to re-run with *better* inputs.
+    - See Juan Li's presentation entitled *retrieval of chlorophyll-a concentration in the Arctic Ocean*.
